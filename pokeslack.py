@@ -48,7 +48,7 @@ class Pokeslack:
         min_remaining = int(expires_in.total_seconds() / 60)
         time_remaining = '%s%ss' % ('%dm' % min_remaining if min_remaining > 0 else '', expires_in.seconds - 60 * min_remaining)
         stars = ''.join([':star:' for x in xrange(rarity)])
-        message = 'I found a <%s|%s> %s <%s|%s meteres away> from the Melbourne office expiring in %s%s' % (pokedex_url, pokemon['name'], stars, map_url, meters_away, time_remaining, from_lure)
+        message = 'I found a <%s|%s> %s <%s|%s meters away> from the Melbourne office expiring in %s%s' % (pokedex_url, pokemon['name'], stars, map_url, meters_away, time_remaining, from_lure)
         # bold message if rarity > 4
         if rarity >= 4:
             message = '*%s*' % message
