@@ -2,3 +2,4 @@
 .env
 .DS_Store
 cached_pokedata.json
+ENV/
