@@ -39,7 +39,7 @@ if __name__ == '__main__':
 
     # const vars
     step_size = 0.0025
-    step_limit = 5
+    step_limit = 15
 
     # debug vars, used to test slack integration w/o waiting
     use_cache = False
@@ -60,9 +60,9 @@ if __name__ == '__main__':
             pokemons = []
             for pokemon in pokesearch.search(position[0], position[1], step_limit, step_size):
                 pokemon_position = (pokemon['latitude'], pokemon['longitude'], 0)
-                distance = vincenty(position, pokemon_position).miles
+                distance = vincenty(position, pokemon_position).meters
                 expires_in = pokemon['disappear_time'] - datetime.utcnow()
-                logger.info("adding pokemon: %s - %s, rarity: %s, expires in: %s, distance: %s miles", pokemon['pokemon_id'], pokemon['name'], pokemon['rarity'], expires_in, distance)
+                logger.info("adding pokemon: %s - %s, rarity: %s, expires in: %s, distance: %s meters", pokemon['pokemon_id'], pokemon['name'], pokemon['rarity'], expires_in, distance)
                 pokeslack.try_send_pokemon(pokemon, position, distance, debug=False)
                 pokemons.append(pokemon)
             with open(cached_filename, 'w') as fp:
@@ -74,6 +74,6 @@ if __name__ == '__main__':
             pokemons = json.load(fp, object_hook=json_deserializer)
             for pokemon in pokemons:
                 pokemon_position = (pokemon['latitude'], pokemon['longitude'], 0)
-                distance = vincenty(position, pokemon_position).miles
+                distance = vincenty(position, pokemon_position).meters
                 pokeslack.try_send_pokemon(pokemon, position, distance, debug=True)
         logger.info('loaded cached pokemon data for %s pokemon', len(pokemons))
