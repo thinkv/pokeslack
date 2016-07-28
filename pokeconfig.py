@@ -8,9 +8,9 @@ class Pokeconfig:
     WALK_MILES_PER_SECOND = 0.0008333 # assumes 3mph (or 0.0008333 miles per second) walking speed
     WALK_METERS_PER_SECOND = 1.66667 # conversion from 6kph
     EXPIRE_BUFFER_SECONDS = 20 # if a pokemon expires in 5 seconds or less (includes negative/stale pokemon), dont send it
-    DEFAULT_NUM_STEPS = 10
+    DEFAULT_NUM_STEPS = 5
     DEFAULT_DISTANCE_UNIT = 'meters'
-    DEFAULT_DISTANCE_LIMIT = 500
+    DEFAULT_DISTANCE_LIMIT = 600
 
     # configured via env
     auth_service = None

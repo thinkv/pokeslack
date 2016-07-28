@@ -29,7 +29,7 @@
 		},
 		"DISTANCE_UNIT": {
 			"description": "Unit of measurement to use (meters or miles)",
-			"value": "miles"
+			"value": "meters"
 		}
 		"DISTANCE_LIMIT": {
 			"description": "Maximum distance (in meters) of pokemon",
