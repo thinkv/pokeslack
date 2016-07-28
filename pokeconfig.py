@@ -58,7 +58,7 @@ class Pokeconfig:
             else:
                 logging.warn('NUM_STEPS not defined defaulting to: %s', self.num_steps)
             if 'DISTANCE_LIMIT' in env:
-                self.num_steps = int(env['DISTANCE_LIMIT'])
+                self.distance_limit = int(env['DISTANCE_LIMIT'])
             else:
                 logging.warn('DISTANCE_LIMIT not defined defaulting to: %s', self.distance_limit)
             if 'DISTANCE_UNIT' in env:
