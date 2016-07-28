@@ -15,6 +15,7 @@ class Pokeslack:
         self.sent_pokemon = {}
         self.rarity_limit = rarity_limit
         self.slack_webhook_url = slack_webhook_url
+        self.distance_limit = distance_limit
 
     def try_send_pokemon(self, pokemon, position, distance, debug):
         disappear_time = pokemon['disappear_time']
