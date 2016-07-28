@@ -3,6 +3,7 @@
 import json
 import logging
 import requests
+import string
 
 from datetime import datetime
 from pokeconfig import Pokeconfig
@@ -56,14 +57,18 @@ class Pokeslack:
             message = '*%s*' % message
 
         logging.info('%s: %s', pokemon_key, message)
-        if self._send(message):
+        if self._send(message, pokemon.name):
             self.sent_pokemon[pokemon_key] = True
 
-    def _send(self, message):
+    def _send(self, message, pokename):
+        poke_name = string.replace(pokename, '_M', '♂')
+        poke_name = string.replace(pokename, '_F', '♀')
+        poke_name = string.replace(pokename, '_', '-').lower()
         payload = {
             'username': 'Poké Alert!',
             'text': message,
-            'icon_emoji': ':ghost:'
+            #'icon_emoji': ':ghost:'
+            "icon_url": "https://img.pokemondb.net/artwork/%s.jpg" % poke_name
         }
         s = json.dumps(payload)
         r = requests.post(self.slack_webhook_url, data=s)
