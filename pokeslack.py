@@ -5,57 +5,54 @@ import logging
 import requests
 
 from datetime import datetime
+from pokeconfig import Pokeconfig
 
 logger = logging.getLogger(__name__)
 
-EXPIRE_BUFFER_SECONDS = 30
-
 class Pokeslack:
-    def __init__(self, rarity_limit, distance_limit, slack_webhook_url):
+    def __init__(self, rarity_limit, slack_webhook_url):
         self.sent_pokemon = {}
         self.rarity_limit = rarity_limit
         self.slack_webhook_url = slack_webhook_url
-        self.distance_limit = distance_limit
 
-    def try_send_pokemon(self, pokemon, position, distance, debug):
-        disappear_time = pokemon['disappear_time']
-        expires_in = disappear_time - datetime.utcnow()
-        rarity = pokemon['rarity']
+    def try_send_pokemon(self, pokemon, debug):
 
-        if expires_in.total_seconds() < EXPIRE_BUFFER_SECONDS:
+        if pokemon.expires_in().total_seconds() < Pokeconfig.EXPIRE_BUFFER_SECONDS:
             logger.info('skipping pokemon since it expires too soon')
             return
 
-        if rarity < self.rarity_limit:
+        if pokemon.rarity < self.rarity_limit:
             logger.info('skipping pokemon since its rarity is too low')
             return
 
-        if distance > self.distance_limit:
-            logger.info('skipping pokemon since it\'s too far: distance=%s', distance)
+        if pokemon.get_distance() > Pokeconfig.get().distance_limit:
+            logger.info('skipping pokemon since it\'s too far: distance=%s', pokemon.get_distance_str())
             return
 
-        padded_distance = distance * 1.1
-        travel_time = padded_distance / 1.66667 # assumes 6kph (or 1.66667 meter per second) walking speed
-        if expires_in.total_seconds() < travel_time:
-            logger.info('skipping pokemon since it\'s too far: traveltime=%s for distance=%s (seconds till expiry: %s)', travel_time, distance, expires_in.total_seconds())
+        padded_distance = pokemon.get_distance() * 1.1
+        walk_distance_per_second = Pokeconfig.WALK_METERS_PER_SECOND if Pokeconfig.get().distance_unit == 'meters' else Pokeconfig.WALK_MILES_PER_SECOND
+        travel_time = padded_distance / walk_distance_per_second
+        if pokemon.expires_in().total_seconds() < travel_time:
+            logger.info('skipping pokemon since it\'s too far: traveltime=%s for distance=%s', travel_time, pokemon.get_distance_str())
             return
 
-        pokemon_key = pokemon['key']
+        pokemon_key = pokemon.key
         if pokemon_key in self.sent_pokemon:
-            logger.info('already sent this pokemon to slack')
+            logger.info('already sent this pokemon to slack with key %s', pokemon_key)
             return
 
-        from_lure = ', from a lure' if pokemon.get('from_lure', False) else ''
-        meters_away = '{:.3f}'.format(distance)
+        from_lure = ', from a lure' if pokemon.from_lure else ''
+        miles_away = pokemon.get_distance_str()
 
-        pokedex_url = 'http://www.pokemon.com/us/pokedex/%s' % pokemon['pokemon_id']
-        map_url = 'http://maps.google.com?saddr=%s,%s&daddr=%s,%s&directionsmode=walking' % (position[0], position[1], pokemon['latitude'], pokemon['longitude'])
-        min_remaining = int(expires_in.total_seconds() / 60)
-        time_remaining = '%s%ss' % ('%dm' % min_remaining if min_remaining > 0 else '', expires_in.seconds - 60 * min_remaining)
-        stars = ''.join([':star:' for x in xrange(rarity)])
-        message = 'I found a <%s|%s> %s <%s|%s meters away> from the Melbourne office expiring in %s%s' % (pokedex_url, pokemon['name'], stars, map_url, meters_away, time_remaining, from_lure)
+        position = Pokeconfig.get().position
+
+        pokedex_url = 'http://www.pokemon.com/us/pokedex/%s' % pokemon.pokemon_id
+        map_url = 'http://maps.google.com?saddr=%s,%s&daddr=%s,%s&directionsmode=walking' % (position[0], position[1], pokemon.position[0], pokemon.position[1])
+        time_remaining = pokemon.expires_in_str()
+        stars = ''.join([':star:' for x in xrange(pokemon.rarity)])
+        message = 'I found a <%s|%s> %s <%s|%s away> from the Melbourne office expiring in %s%s' % (pokedex_url, pokemon.name, stars, map_url, miles_away, time_remaining, from_lure)
         # bold message if rarity > 4
-        if rarity >= 4:
+        if pokemon.rarity >= 4:
             message = '*%s*' % message
 
         logging.info('%s: %s', pokemon_key, message)

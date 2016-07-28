@@ -20,11 +20,20 @@
 			"description": "Only notified for Pokémon at this rarity or higher.",
 			"value": "3"
 		},
-		"DISTANCE_LIMIT": {
-			"description": "Maximum distance (in meters) of pokemon"
-		},
 		"SLACK_WEBHOOK_URL": {
 			"description": "Looks like https://hooks.slack.com/services/XXX"
+		},
+		"NUM_STEPS": {
+			"description": "Number of steps to search.",
+			"value": "5"
+		},
+		"DISTANCE_UNIT": {
+			"description": "Unit of measurement to use (meters or miles)",
+			"value": "miles"
 		}
+		"DISTANCE_LIMIT": {
+			"description": "Maximum distance (in meters) of pokemon",
+			"value": "500"
+		},
 	}
 }
