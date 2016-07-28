@@ -18,6 +18,8 @@ Create an .env file at the project root with the following content filled out. D
     RARITY_LIMIT=3
     SLACK_WEBHOOK_URL=https://hooks.slack.com/services/XXX
     DISTANCE_LIMIT=600
+    DISTANCE_UNIT=meters/miles
+    NUM_STEPS=5
 
 ### Pokemon Data
 This project contains a file `pokedata.csv` where you can customize the assigned rarity to each Pokemon. 
